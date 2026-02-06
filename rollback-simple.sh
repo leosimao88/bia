@@ -7,7 +7,7 @@ SERVICE="service-bia"
 TASK_FAMILY="task-def-bia"
 ECR_REPO="bia"
 
-if [ -z "$1" ]; then
+if [ -z "$1" ] || [ "$1" = "list" ]; then
     echo "=== Rollback Simple - Projeto BIA ==="
     echo ""
     echo "Uso: $0 <commit_hash>"
@@ -21,11 +21,12 @@ if [ -z "$1" ]; then
         --query 'taskDefinitionArns[]' \
         --output text | tr '\t' '\n' | while read arn; do
             revision=$(echo $arn | sed 's/.*://')
-            image=$(aws ecs describe-task-definition --task-definition $arn --region ${REGION} --query 'taskDefinition.containerDefinitions[0].image' --output text)
-            tag=$(echo $image | sed 's/.*://')
-            echo "Revisão: $revision | Tag: $tag"
+            taskdef=$(aws ecs describe-task-definition --task-definition $arn --region ${REGION})
+            tag=$(echo "$taskdef" | jq -r '.taskDefinition.containerDefinitions[0].image' | awk -F: '{print $NF}')
+            created=$(echo "$taskdef" | jq -r '.taskDefinition.registeredAt' | cut -d'T' -f1)
+            echo "Revisão: $revision | Tag: $tag | Criada: $created"
         done
-    exit 1
+    exit 0
 fi
 
 COMMIT_HASH=$1
