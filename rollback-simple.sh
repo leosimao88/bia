@@ -5,33 +5,60 @@ REGION="us-east-1"
 CLUSTER="cluster-bia"
 SERVICE="service-bia"
 TASK_FAMILY="task-def-bia"
+ECR_REPO="bia"
 
 if [ -z "$1" ]; then
     echo "=== Rollback Simple - Projeto BIA ==="
     echo ""
-    echo "Uso: $0 <revision>"
+    echo "Uso: $0 <commit_hash>"
     echo ""
-    echo "Últimas 10 revisões disponíveis:"
+    echo "Últimas 10 versões disponíveis:"
     aws ecs list-task-definitions \
         --family-prefix ${TASK_FAMILY} \
         --region ${REGION} \
-        --max-items 10 \
+        --max-results 10 \
         --sort DESC \
         --query 'taskDefinitionArns[]' \
-        --output text | tr '\t' '\n'
+        --output text | tr '\t' '\n' | while read arn; do
+            revision=$(echo $arn | sed 's/.*://')
+            image=$(aws ecs describe-task-definition --task-definition $arn --region ${REGION} --query 'taskDefinition.containerDefinitions[0].image' --output text)
+            tag=$(echo $image | sed 's/.*://')
+            echo "Revisão: $revision | Tag: $tag"
+        done
     exit 1
 fi
 
-REVISION=$1
+COMMIT_HASH=$1
 
 echo "=== Rollback Simple - Projeto BIA ==="
-echo "Fazendo rollback para: ${TASK_FAMILY}:${REVISION}"
+echo "Buscando task definition com hash: ${COMMIT_HASH}"
+echo ""
+
+TASK_DEF_ARN=$(aws ecs list-task-definitions \
+    --family-prefix ${TASK_FAMILY} \
+    --region ${REGION} \
+    --sort DESC \
+    --query 'taskDefinitionArns[]' \
+    --output text | tr '\t' '\n' | while read arn; do
+        image=$(aws ecs describe-task-definition --task-definition $arn --region ${REGION} --query 'taskDefinition.containerDefinitions[0].image' --output text)
+        if echo $image | grep -q ":${COMMIT_HASH}"; then
+            echo $arn
+            break
+        fi
+    done)
+
+if [ -z "$TASK_DEF_ARN" ]; then
+    echo "✗ Nenhuma task definition encontrada com o hash: ${COMMIT_HASH}"
+    exit 1
+fi
+
+echo "Encontrada: ${TASK_DEF_ARN}"
 echo ""
 
 aws ecs update-service \
     --cluster ${CLUSTER} \
     --service ${SERVICE} \
-    --task-definition ${TASK_FAMILY}:${REVISION} \
+    --task-definition ${TASK_DEF_ARN} \
     --region ${REGION} \
     --query 'service.taskDefinition' \
     --output text
