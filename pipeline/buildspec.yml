@@ -11,6 +11,11 @@ phases:
   build:
     commands:
       - echo Build iniciado em `date`
+      - echo Rodando testes...
+      - npm install --loglevel=error
+      - npm test
+      - echo Executando migrations...
+      - npx sequelize-cli db:migrate
       - echo Gerando imagem da BIA...
       - docker build -t $REPOSITORY_URI:latest .
       - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
@@ -22,6 +27,5 @@ phases:
       - docker push $REPOSITORY_URI:$IMAGE_TAG
       - echo Gerando artefato da imagem para o ECS
       - printf '[{"name":"bia","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
-      - codebuild-breakpoint
 artifacts:
   files: imagedefinitions.json
