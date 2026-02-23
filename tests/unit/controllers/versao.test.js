@@ -17,7 +17,7 @@ describe('Versao Controller', () => {
     // Chama o método get do objeto controller
     get(req, res);
 
-    expect(res.send).toHaveBeenCalledWith('Bia 4.2.0');
+    expect(res.send).toHaveBeenCalledWith('Bia 4.2.1');
   });
 
   test('get deve retornar a string de resposta correta quando VERSAO_API não está definido', () => {
@@ -29,18 +29,18 @@ describe('Versao Controller', () => {
     // Chama o método get do objeto controller
     get(req, res);
 
-    expect(res.send).toHaveBeenCalledWith('Bia 4.2.0');
+    expect(res.send).toHaveBeenCalledWith('Bia 4.2.1');
   });
 
   test('get deve retornar a string de resposta correta quando VERSAO_API está definido', () => {
     // Simula o cenário onde VERSAO_API está definido
-    process.env.VERSAO_API = '1.0.0';
+    process.env.VERSAO_API = '1.1.1';
 
     // Chama a função retornada pelo controller para obter o objeto controller
     const { get } = versaoController();
     // Chama o método get do objeto controller
     get(req, res);
 
-    expect(res.send).toHaveBeenCalledWith('Bia 1.0.0');
+    expect(res.send).toHaveBeenCalledWith('Bia 1.1.1');
   });
 });
