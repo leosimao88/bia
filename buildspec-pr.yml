@@ -9,6 +9,7 @@ phases:
   build:
     commands:
       - npm install --loglevel=error
+      - cd client && npm install --legacy-peer-deps --loglevel=error && cd ..
       - export REACT_APP_API_URL=http://localhost:3001
       - export SKIP_PREFLIGHT_CHECK=true
       - npm run build --prefix client
