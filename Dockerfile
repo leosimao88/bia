@@ -25,4 +25,7 @@ RUN cd client && npm prune --production && rm -rf node_modules/.cache
 
 EXPOSE 8080
 
-CMD [ "npm", "start" ]
+COPY entrypoint.sh /usr/src/app/
+RUN chmod +x /usr/src/app/entrypoint.sh
+
+CMD ["/usr/src/app/entrypoint.sh"]
