@@ -1,0 +1,11 @@
+services:
+  server:
+    image: 322095785990.dkr.ecr.us-east-1.amazonaws.com/bia:${TAG}
+    ports:
+      - 80:8080
+    environment:
+      DB_SECRET_NAME: "rds!db-781c6039-3f7a-481a-a944-0bc5a3acf165"
+      DB_REGION: us-east-1
+      DB_PORT: 5432
+      DEBUG_SECRET: "true"
+      DB_HOST: "bia-db.cfaxmljll1xz.us-east-1.rds.amazonaws.com"

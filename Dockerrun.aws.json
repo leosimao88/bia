@@ -1,0 +1,35 @@
+{
+  "AWSEBDockerrunVersion": "1",
+  "Image": {
+    "Name": "322095785990.dkr.ecr.us-east-1.amazonaws.com/bia:82aa669",
+    "Update": "true"
+  },
+  "Ports": [
+    {
+      "ContainerPort": 8080,
+      "HostPort": 80
+    }
+  ],
+  "Environment": [
+    {
+      "Name": "DB_SECRET_NAME",
+      "Value": "rds!db-781c6039-3f7a-481a-a944-0bc5a3acf165"
+    },
+    {
+      "Name": "DB_REGION",
+      "Value": "us-east-1"
+    },
+    {
+      "Name": "DB_PORT",
+      "Value": "5432"
+    },
+    {
+      "Name": "DEBUG_SECRET",
+      "Value": "true"
+    },
+    {
+      "Name": "DB_HOST",
+      "Value": "bia-db.cfaxmljll1xz.us-east-1.rds.amazonaws.com"
+    }
+  ]
+}

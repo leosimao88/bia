@@ -1,0 +1,20 @@
+name: bia
+services:
+  server:
+    environment:
+      DB_HOST: bia-db.cfaxmljll1xz.us-east-1.rds.amazonaws.com
+      DB_PORT: "5432"
+      DB_REGION: us-east-1
+      DB_SECRET_NAME: rds!db-781c6039-3f7a-481a-a944-0bc5a3acf165
+      DEBUG_SECRET: "true"
+    image: 322095785990.dkr.ecr.us-east-1.amazonaws.com/bia:82aa669
+    networks:
+      default: null
+    ports:
+      - mode: ingress
+        target: 8080
+        published: "80"
+        protocol: tcp
+networks:
+  default:
+    name: bia_default
